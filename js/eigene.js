@@ -78,6 +78,8 @@ export function openFoodEditor(existing, onSaved) {
     </div>
     <form id="foodForm" class="form-grid">
       <label class="wide">Name<input name="name" required value="${esc(f.name || "")}"></label>
+      <label class="wide">Weitere Suchbegriffe (optional, mit Komma getrennt)
+        <input name="aliases" placeholder="z. B. Marke, Sorte, andere Bezeichnung" value="${esc((f.aliases || []).join(", "))}"></label>
       <label>Portion (Bezeichnung)<input name="pName" value="${esc(f.portions?.[0]?.[0] || "Portion")}"></label>
       <label>Portion (Gramm)<input name="pGrams" type="number" step="any" min="0" value="${f.portions?.[0]?.[1] ?? 100}"></label>
       <label class="wide checkbox"><input type="checkbox" name="liquid" ${f.liquid ? "checked" : ""}> Getränk (Mengen in ml)</label>
@@ -93,12 +95,19 @@ export function openFoodEditor(existing, onSaved) {
   if (n.salt == null && n.na != null) fill({ salt: (n.na * 2.5) / 1000 });
 
   $("#offBtn", d).onclick = () => offSearch($("#offQuery", d).value.trim(), $("#offResult", d), (p) => {
-    form.elements.name.value = [p.product_name, p.brands?.split(",")[0]].filter(Boolean).join(" – ");
+    // Open Food Facts hat den Hauptnamen oft in einer anderen Sprache – deutschen Namen bevorzugen
+    const brands = (p.brands || "").split(",").map((b) => b.trim()).filter(Boolean);
+    const name = p.product_name_de || p.product_name || p.generic_name_de || p.generic_name || "";
+    form.elements.name.value = [name, brands[0]].filter(Boolean).join(" – ");
+    const extra = [...brands.slice(0, 2), p.generic_name_de, p.generic_name, p.product_name, p.product_name_en]
+      .map((x) => x?.trim()).filter((x) => x && x !== name);
+    form.elements.aliases.value = [...new Set(extra)].join(", ");
     const nu = p.nutriments || {};
     fill({ kcal: nu["energy-kcal_100g"], fat: nu.fat_100g, satfat: nu["saturated-fat_100g"], carbs: nu.carbohydrates_100g,
       sugar: nu.sugars_100g, fiber: nu.fiber_100g, protein: nu.proteins_100g, salt: nu.salt_100g });
     const micro = {};
-    for (const [k, [off, f2]] of Object.entries(OFF_MICRO)) if (nu[off + "_100g"] != null) micro[k] = nu[off + "_100g"] * f2;
+    // Nullwerte bei Vitaminen/Mineralstoffen sind bei Open Food Facts meist Platzhalter, keine Messwerte
+    for (const [k, [off, f2]] of Object.entries(OFF_MICRO)) if (nu[off + "_100g"] > 0) micro[k] = nu[off + "_100g"] * f2;
     fill(micro);
     if (Object.keys(micro).length) form.querySelector("details").open = true;
     if (p.serving_quantity) { form.elements.pGrams.value = p.serving_quantity; form.elements.pName.value = "Portion"; }
@@ -116,7 +125,8 @@ export function openFoodEditor(existing, onSaved) {
     if (nn.salt != null) { nn.na = (nn.salt / 2.5) * 1000; delete nn.salt; }
     nn.alcohol = 0;
     const food = {
-      id: existing?.id || "c" + Date.now().toString(36), name: fd.get("name").trim(), cat: "Eigene", aliases: [],
+      id: existing?.id || "c" + Date.now().toString(36), name: fd.get("name").trim(), cat: "Eigene",
+      aliases: fd.get("aliases").split(",").map((a) => a.trim()).filter(Boolean),
       portions: [[fd.get("pName").trim() || "Portion", parseFloat(fd.get("pGrams")) || 100]],
       n: nn, src: "eigene Angabe", liquid: fd.get("liquid") === "on",
     };
@@ -131,7 +141,7 @@ export function openFoodEditor(existing, onSaved) {
 async function offSearch(q, out, onPick) {
   if (!q) return;
   out.innerHTML = "Suche …";
-  const fields = "code,product_name,brands,nutriments,serving_quantity";
+  const fields = "code,product_name,product_name_de,product_name_en,generic_name,generic_name_de,brands,nutriments,serving_quantity";
   try {
     let products;
     if (/^\d{8,14}$/.test(q)) {
@@ -145,7 +155,7 @@ async function offSearch(q, out, onPick) {
     }
     products = products.filter((p) => p.nutriments?.["energy-kcal_100g"] != null);
     if (!products.length) { out.innerHTML = "Nichts gefunden."; return; }
-    out.innerHTML = `<ul class="src-list">${products.map((p, i) => `<li><span>${esc(p.product_name || "?")} <span class="muted">${esc(p.brands || "")}</span></span>
+    out.innerHTML = `<ul class="src-list">${products.map((p, i) => `<li><span>${esc(p.product_name_de || p.product_name || p.generic_name_de || "?")} <span class="muted">${esc(p.brands || "")}</span></span>
       <span class="v">${num(p.nutriments["energy-kcal_100g"])} kcal<button type="button" class="add-btn" data-i="${i}">übernehmen</button></span></li>`).join("")}</ul>`;
     out.querySelectorAll("[data-i]").forEach((b) => (b.onclick = () => { onPick(products[+b.dataset.i]); out.innerHTML = "✓ Übernommen – bitte kurz prüfen."; }));
   } catch {

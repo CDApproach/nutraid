@@ -9,7 +9,7 @@ import urllib.request
 from pathlib import Path
 
 OFF_SEARCH = "https://search.openfoodfacts.org/search"
-OFF_FIELDS = "code,product_name,brands,nutriments,serving_quantity"
+OFF_FIELDS = "code,product_name,product_name_de,product_name_en,generic_name,generic_name_de,brands,nutriments,serving_quantity"
 
 
 class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
