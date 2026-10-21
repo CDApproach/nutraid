@@ -31,8 +31,8 @@ function ring(value, target) {
   return `<div class="ring-wrap" data-tip="${esc(`Energie: ${num(value)} von ${num(target)} kcal (${pct(ratio * 100)})`)}">
     <svg viewBox="0 0 150 150" width="150" height="150" aria-hidden="true">
       <circle cx="75" cy="75" r="${r}" fill="none" stroke="var(--track)" stroke-width="12"/>
-      <circle cx="75" cy="75" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round"
-        stroke-dasharray="${(c * shown).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 75 75)"/>
+      ${shown > 0 ? `<circle cx="75" cy="75" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round"
+        stroke-dasharray="${(c * shown).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 75 75)"/>` : ""}
     </svg>
     <div class="ring-center"><strong>${num(value)}</strong><span>von ${num(target)} kcal</span>
       <span>${ratio < 1 ? `noch ${num(target - value)}` : over ? `${num(value - target)} drüber` : "Ziel erreicht"}</span></div>

@@ -1,8 +1,8 @@
 // Einstieg: Tabs, Tagesnavigation, Eingabe mit Vorschlägen, Tagebuch und Profil.
-import { MEALS, mealForHour, energyTarget, targetsFor } from "./referenz.js";
+import { MEALS, SUPPLEMENT_MEAL, mealForHour, energyTarget, targetsFor } from "./referenz.js";
 import {
   state, save, foods, loadFoods, loadUsda, usdaReady, search, suggestions, companions, parseInput, amountFor,
-  unitsFor, formatAmount, dayKey, entries, addEntry, updateEntry, removeEntry, restoreEntry, exportData, importData,
+  unitsFor, formatAmount, supplementDose, dayKey, entries, addEntry, updateEntry, removeEntry, restoreEntry, exportData, importData,
 } from "./daten.js";
 import { renderDashboard, bindDashboard, setAddHandler, openFood } from "./dashboard.js";
 import { renderVerlauf } from "./verlauf.js";
@@ -27,6 +27,7 @@ function renderAll() {
   renderMealSwitch();
   renderMeals();
   renderQuick();
+  renderSupplements();
   renderDashboard($("#dashboard"), day, range);
   renderMiniSummary();
 }
@@ -54,7 +55,8 @@ function renderMeals() {
   const y = new Date(day);
   y.setDate(y.getDate() - 1);
   const yList = entries(dayKey(y));
-  $("#mealList").innerHTML = MEALS.map((m) => {
+  const meals = list.some((e) => e.meal === SUPPLEMENT_MEAL.key) ? [...MEALS, SUPPLEMENT_MEAL] : MEALS;
+  $("#mealList").innerHTML = meals.map((m) => {
     const items = list.filter((e) => e.meal === m.key);
     const yItems = yList.filter((e) => e.meal === m.key);
     const kcal = items.reduce((s, e) => s + kcalOf(e), 0);
@@ -69,7 +71,7 @@ function renderMeals() {
       : `<p class="meal-empty">Noch nichts eingetragen.</p>`;
     const actions = [];
     if (!items.length && yItems.length) actions.push(`<button class="btn small" data-copy="${m.key}">↻ Wie gestern (${yItems.length})</button>`);
-    if (items.length >= 2) actions.push(`<button class="btn small ghost" data-recipe="${m.key}">Als Rezept speichern</button>`);
+    if (items.length >= 2 && m !== SUPPLEMENT_MEAL) actions.push(`<button class="btn small ghost" data-recipe="${m.key}">Als Rezept speichern</button>`);
     return `<div class="card meal" data-meal-card="${m.key}">
       <div class="meal-head"><h3>${m.name}</h3><span class="meal-kcal">${items.length ? `${num(kcal)} kcal` : ""}</span></div>
       ${body}${actions.length ? `<div class="meal-actions">${actions.join("")}</div>` : ""}</div>`;
@@ -82,7 +84,7 @@ function renderQuick() {
   const inMeal = entries(today()).filter((e) => e.meal === meal).map((e) => e.food);
   const comp = companions(inMeal, 5);
   const hour = mealHour(meal);
-  const sugg = suggestions(10, hour).filter((f) => !inMeal.includes(f.id) && !comp.includes(f)).slice(0, 8);
+  const sugg = suggestions(12, hour).filter((f) => !inMeal.includes(f.id) && !comp.includes(f) && !f.daily).slice(0, 8);
   let html = "";
   if (comp.length) html += `<span class="q-label">Dazu isst du oft:</span>` + comp.map(chip).join("");
   if (sugg.length) html += `<span class="q-label">Häufig bei dir${mealPinned || !isToday() ? ` (${MEALS.find((m) => m.key === meal).name})` : " um diese Zeit"}:</span>` + sugg.map(chip).join("");
@@ -101,8 +103,36 @@ function mealHour(m) {
   return { fruehstueck: 8, mittag: 12, abend: 19, snack: 16 }[m];
 }
 
+// Täglich genommene Nahrungsergänzung zum Abhaken
+function dailySupplements() {
+  return [...foods.values()].filter((f) => f.supplement && f.daily);
+}
+
+function renderSupplements() {
+  const list = dailySupplements();
+  const taken = new Set(entries(today()).map((e) => e.food));
+  $("#suppToggles").innerHTML = list.length
+    ? `<span class="q-label">Nahrungsergänzung:</span>` + list.map((f) => {
+      const on = taken.has(f.id);
+      return `<button class="chip ${on ? "on" : ""}" data-supp="${f.id}" aria-pressed="${on}">${on ? "✓" : "○"} ${esc(f.name)} <small>${esc(formatAmount(supplementDose(f), f))}</small></button>`;
+    }).join("")
+    : "";
+}
+
+function toggleSupplement(id) {
+  const f = foods.get(id);
+  const existing = entries(today()).find((e) => e.food === id);
+  if (existing) {
+    removeEntry(today(), existing.id);
+    renderAll();
+  } else {
+    add(f, supplementDose(f));
+  }
+}
+
 // ---------- Hinzufügen ----------
 function add(f, amount, m = meal) {
+  if (f.supplement) m = SUPPLEMENT_MEAL.key;
   const e = addEntry(today(), f, amount, m);
   requestPersistence();
   toast(`${esc(f.name)} · ${esc(formatAmount(amount, f))} hinzugefügt`, "Rückgängig", () => {
@@ -127,7 +157,7 @@ function updateSuggest() {
   }
   selected = 0;
   const items = results.map(({ f, a }, i) => `<li role="option" id="opt${i}" data-i="${i}" aria-selected="${i === selected}">
-      <span class="s-name">${esc(f.name)}${f.usda ? '<span class="badge">USDA</span>' : f.recipe ? '<span class="badge">Rezept</span>' : f.custom ? '<span class="badge">eigenes</span>' : ""}
+      <span class="s-name">${esc(f.name)}${f.usda ? '<span class="badge">USDA</span>' : f.recipe ? '<span class="badge">Rezept</span>' : f.supplement ? '<span class="badge">Ergänzung</span>' : f.custom ? '<span class="badge">eigenes</span>' : ""}
       ${f.usda ? `<span class="s-sub">${esc(f.cat)}</span>` : ""}</span>
       <span class="s-meta">${esc(formatAmount(a, f))}<br>${num(((f.n.kcal || 0) * a.grams) / 100)} kcal</span></li>`);
   items.push(`<li class="s-more" data-new="1">+ Eigenes Lebensmittel „${esc(parsed.rest.trim())}“ anlegen</li>`);
@@ -186,6 +216,10 @@ function bindInput() {
     pick(+li.dataset.i);
   });
   input().addEventListener("blur", () => setTimeout(closeSuggest, 150));
+  $("#suppToggles").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-supp]");
+    if (b) toggleSupplement(b.dataset.supp);
+  });
   $("#quick").addEventListener("click", (e) => {
     const b = e.target.closest("[data-quick]");
     if (!b) return;

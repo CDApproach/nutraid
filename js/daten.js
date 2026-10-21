@@ -180,7 +180,7 @@ function unitKey(u) {
 }
 
 // Liefert {qty, unit, rest} – unit ist roh, wird erst mit dem Lebensmittel aufgelöst
-const UNIT_RE = /^(g|gr|gramm|kg|ml|l|cl|liter|stk|el|tl)$|^(stueck|stuck|scheibe|tasse|glas$|glaeser|glaser|becher|handvoll|portion|prise|dose|packung|zehe|stange|kugel|riegel|tafel|flasche|schale|schuss|filet|ecke|roschen|blatt|tute|essloffel|essloeffel|teeloffel|teeloeffel)/;
+const UNIT_RE = /^(g|gr|gramm|kg|ml|l|cl|liter|stk|el|tl)$|^(kapsel|tablette|tropfen|messloffel|messloeffel|brausetablette|kautablette|stueck|stuck|scheibe|tasse|glas$|glaeser|glaser|becher|handvoll|portion|prise|dose|packung|zehe|stange|kugel|riegel|tafel|flasche|schale|schuss|filet|ecke|roschen|blatt|tute|essloffel|essloeffel|teeloffel|teeloeffel)/;
 
 export function parseInput(text) {
   let t = text.trim();
@@ -233,6 +233,7 @@ export function isLiquid(f) {
 
 // Alle Einheiten eines Lebensmittels inkl. g/ml
 export function unitsFor(f) {
+  if (f.supplement) return [{ label: f.unit, g: 1 }];
   const list = (f.portions || []).map(([label, g]) => ({ label, g }));
   list.push({ label: "g", g: 1 });
   if (isLiquid(f)) list.push({ label: "ml", g: 1 });
@@ -256,6 +257,7 @@ export function resolveUnit(f, rawUnit) {
 
 // Standardmenge: zuletzt verwendete, sonst erste Portion, sonst 100 g
 export function defaultAmount(f) {
+  if (f.supplement) return supplementDose(f);
   const s = state.stats[f.id];
   if (s?.lastUnit) {
     const u = unitsFor(f).find((x) => x.label === s.lastUnit);
@@ -264,6 +266,11 @@ export function defaultAmount(f) {
   const p = f.portions?.[0];
   if (p) return { qty: 1, unit: p[0], grams: p[1] };
   return { qty: 100, unit: isLiquid(f) ? "ml" : "g", grams: 100 };
+}
+
+export function supplementDose(f) {
+  const qty = f.dose || 1;
+  return { qty, unit: f.unit, grams: qty };
 }
 
 export function amountFor(f, parsed) {
@@ -283,13 +290,15 @@ export function amountFor(f, parsed) {
 
 const PLURAL = { Scheibe: "Scheiben", Tasse: "Tassen", Portion: "Portionen", Zehe: "Zehen", Stange: "Stangen", Kugel: "Kugeln",
   Schale: "Schalen", Flasche: "Flaschen", Ecke: "Ecken", Dose: "Dosen", Packung: "Packungen", Glas: "Gläser", Filet: "Filets",
-  Tafel: "Tafeln", Blatt: "Blätter", Prise: "Prisen", Cocktailtomate: "Cocktailtomaten" };
+  Tafel: "Tafeln", Blatt: "Blätter", Prise: "Prisen", Cocktailtomate: "Cocktailtomaten",
+  Kapsel: "Kapseln", Tablette: "Tabletten", Brausetablette: "Brausetabletten", Kautablette: "Kautabletten" };
 
 export function formatAmount(e, f) {
   const q = Math.round(e.qty * 100) / 100;
   const qs = String(q).replace(".", ",");
   if (e.unit === "g" || e.unit === "ml") return `${qs} ${e.unit}`;
   const unit = q > 1 && PLURAL[e.unit] ? PLURAL[e.unit] : e.unit;
+  if (f?.supplement) return `${qs} ${unit}`;
   return `${qs} ${unit} · ${Math.round(e.grams)} ${f && isLiquid(f) ? "ml" : "g"}`;
 }
 
@@ -450,7 +459,7 @@ export function rangeTotals(dayKeys) {
 export function bestSources(key, limit = 6) {
   const out = [];
   for (const f of foods.values()) {
-    if (f.usda || f.recipe || f.n[key] == null) continue;
+    if (f.usda || f.recipe || f.supplement || f.n[key] == null) continue;
     const amount = defaultAmount(f);
     const per = (f.n[key] * amount.grams) / 100;
     const kcal = ((f.n.kcal || 0) * amount.grams) / 100;

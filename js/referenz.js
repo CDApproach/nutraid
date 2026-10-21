@@ -203,6 +203,9 @@ export const MEALS = [
   { key: "snack", name: "Snacks & Getränke" },
 ];
 
+// Nahrungsergänzung landet unabhängig von der Uhrzeit in einer eigenen Gruppe
+export const SUPPLEMENT_MEAL = { key: "ergaenzung", name: "Nahrungsergänzung" };
+
 export function mealForHour(h) {
   if (h >= 4 && h < 11) return "fruehstueck";
   if (h >= 11 && h < 15) return "mittag";

@@ -1,6 +1,6 @@
 // Eigene Lebensmittel (mit Open-Food-Facts-Suche), Rezeptliste und Nachschlagen.
 import { NUTRIENTS } from "./referenz.js";
-import { state, foods, search, saveCustomFood, deleteCustomFood, loadUsda, recipeFromEntries } from "./daten.js";
+import { state, foods, search, saveCustomFood, deleteCustomFood, loadUsda, recipeFromEntries, formatAmount, supplementDose } from "./daten.js";
 import { openFood } from "./dashboard.js";
 import { esc, num, openSheet, toast, $ } from "./ui.js";
 
@@ -19,12 +19,12 @@ export function renderCustomList() {
   const list = state.custom.filter((c) => !c.remembered);
   const el = document.getElementById("customList");
   if (!list.length) {
-    el.innerHTML = `<p class="muted">Noch keine eigenen Lebensmittel. Für verpackte Produkte kannst du die Nährwerte von der Packung abtippen oder über Open Food Facts suchen.</p>`;
+    el.innerHTML = `<p class="muted">Noch keine eigenen Einträge. Für verpackte Produkte kannst du die Nährwerte von der Packung abtippen oder über Open Food Facts suchen – und unter „Nahrungsergänzung“ Präparate wie Omega-3-Kapseln oder Vitamin D anlegen.</p>`;
     return;
   }
   el.innerHTML = list.map((c) => `<div class="custom-item">
-      <span class="grow"><b>${esc(c.name)}</b> <span class="badge">${c.recipe ? "Rezept" : "eigenes"}</span><br>
-      <span class="small muted">${num(c.n.kcal)} kcal / 100 g · ${c.portions.map((p) => `${esc(p[0])} = ${num(p[1])} g`).join(", ")}</span></span>
+      <span class="grow"><b>${esc(c.name)}</b> <span class="badge">${c.recipe ? "Rezept" : c.supplement ? "Ergänzung" : "eigenes"}</span>${c.daily ? '<span class="badge">täglich</span>' : ""}<br>
+      <span class="small muted">${c.supplement ? suppSummary(c) : `${num(c.n.kcal)} kcal / 100 g · ${c.portions.map((p) => `${esc(p[0])} = ${num(p[1])} g`).join(", ")}`}</span></span>
       <button class="btn small" data-show="${c.id}">Nährwerte</button>
       ${c.recipe ? "" : `<button class="btn small" data-edit="${c.id}">Bearbeiten</button>`}
       <button class="btn small ghost" data-del="${c.id}" aria-label="Löschen">🗑</button>
@@ -39,6 +39,15 @@ export function renderCustomList() {
       renderCustomList();
     }
   };
+}
+
+// "2 Kapseln täglich · EPA 500 mg, DHA 250 mg, Vitamin D 20 µg"
+function suppSummary(c) {
+  const names = { epa: ["EPA", "mg"], dha: ["DHA", "mg"], ala: ["ALA", "mg"] };
+  for (const m of MICROS) names[m.key] = [m.name.replace(/ \(.*\)/, ""), m.unit];
+  const parts = Object.entries(c.n).filter(([k, v]) => names[k] && v > 0)
+    .map(([k, v]) => `${names[k][0]} ${num((v / 100) * c.dose)} ${names[k][1]}`);
+  return `${esc(formatAmount(supplementDose(c), c))} pro Tag${parts.length ? " · " + esc(parts.join(", ")) : ""}`;
 }
 
 export function bindBrowse() {
@@ -65,34 +74,82 @@ function field(key, label, unit, value) {
   return `<label>${esc(label)} (${unit})<input name="${key}" type="number" step="any" min="0" inputmode="decimal" value="${value ?? ""}"></label>`;
 }
 
+const FATTY = [["epa", "EPA (Omega-3)", "mg"], ["dha", "DHA (Omega-3)", "mg"], ["ala", "Alpha-Linolensäure (Omega-3)", "mg"]];
+const SUPP_UNITS = ["Kapsel", "Tablette", "Tropfen", "Messlöffel", "Brausetablette", "Kautablette", "Portion"];
+// Synthetische Folsäure wirkt stärker als Nahrungsfolat: 1 µg Folsäure = 1,7 µg Folat-Äquivalente
+const FOLIC_FACTOR = 1.7;
+
 export function openFoodEditor(existing, onSaved) {
   const f = existing || { n: {}, portions: [["Portion", 100]] };
+  const supp = !!f.supplement;
+  // Nahrungsergänzung wird pro Einheit eingegeben, intern aber wie "pro 100 g" bei 1 g je Einheit gespeichert
   const n = { ...f.n };
+  if (supp) {
+    for (const k in n) n[k] /= 100;
+    if (n.folate != null) n.folate /= FOLIC_FACTOR;
+  }
+  const microField = (m) => m.key === "folate"
+    ? `<label data-only="food">${esc(m.name)} (${m.unit})<input name="folate" type="number" step="any" min="0" inputmode="decimal" value="${supp ? "" : round3(n.folate)}"></label>
+       <label data-only="supp">Folsäure (µg)<input name="folicAcid" type="number" step="any" min="0" inputmode="decimal" value="${supp ? round3(n.folate) : ""}"></label>`
+    : field(m.key, m.name, m.unit, round3(n[m.key]));
+  const hasMicro = MICROS.some((m) => n[m.key] != null);
   const d = openSheet("foodDialog", `
-    <div class="sheet-head"><h2>${existing ? "Lebensmittel bearbeiten" : "Neues Lebensmittel"}</h2><button class="close" data-close aria-label="Schließen">×</button></div>
-    <div class="card" style="box-shadow:none;background:var(--surface-2)">
+    <div class="sheet-head"><h2>${existing?.id ? "Bearbeiten" : "Neu anlegen"}</h2><button class="close" data-close aria-label="Schließen">×</button></div>
+    <div class="range-switch kind-switch" role="group" aria-label="Art">
+      <button type="button" data-kind="food">Lebensmittel</button><button type="button" data-kind="supp">Nahrungsergänzung</button>
+    </div>
+    <div class="card" data-only="food" style="box-shadow:none;background:var(--surface-2)">
       <label class="small">Bei Open Food Facts suchen (Barcode oder Produktname)</label>
       <div style="display:flex;gap:.4rem;margin-top:.3rem"><input id="offQuery" class="input" placeholder="z. B. 4008400401621 oder Skyr Natur">
       <button class="btn" id="offBtn" type="button">Suchen</button></div>
       <div id="offResult" class="small"></div>
     </div>
     <form id="foodForm" class="form-grid">
-      <label class="wide">Name<input name="name" required value="${esc(f.name || "")}"></label>
+      <label class="wide">Name<input name="name" required value="${esc(f.name || "")}" placeholder=""></label>
       <label class="wide">Weitere Suchbegriffe (optional, mit Komma getrennt)
         <input name="aliases" placeholder="z. B. Marke, Sorte, andere Bezeichnung" value="${esc((f.aliases || []).join(", "))}"></label>
-      <label>Portion (Bezeichnung)<input name="pName" value="${esc(f.portions?.[0]?.[0] || "Portion")}"></label>
-      <label>Portion (Gramm)<input name="pGrams" type="number" step="any" min="0" value="${f.portions?.[0]?.[1] ?? 100}"></label>
-      <label class="wide checkbox"><input type="checkbox" name="liquid" ${f.liquid ? "checked" : ""}> Getränk (Mengen in ml)</label>
-      <div class="wide small muted">Nährwerte pro 100 g bzw. 100 ml – wie auf der Packung:</div>
-      ${BASIC.map(([k, l, u]) => field(k, l, u, round3(n[k]))).join("")}
-      <details class="wide more"><summary>Vitamine & Mineralstoffe (optional)</summary>
-        <div class="form-grid">${MICROS.map((m) => field(m.key, m.name, m.unit, round3(n[m.key]))).join("")}</div>
+
+      <label data-only="food">Portion (Bezeichnung)<input name="pName" value="${esc(supp ? "Portion" : f.portions?.[0]?.[0] || "Portion")}"></label>
+      <label data-only="food">Portion (Gramm)<input name="pGrams" type="number" step="any" min="0" value="${supp ? 100 : f.portions?.[0]?.[1] ?? 100}"></label>
+      <label data-only="food" class="wide checkbox"><input type="checkbox" name="liquid" ${f.liquid ? "checked" : ""}> Getränk (Mengen in ml)</label>
+
+      <label data-only="supp">Einheit<input name="unit" list="suppUnits" value="${esc(f.unit || "Kapsel")}"></label>
+      <datalist id="suppUnits">${SUPP_UNITS.map((u) => `<option value="${u}">`).join("")}</datalist>
+      <label data-only="supp">Tagesdosis (Anzahl)<input name="dose" type="number" step="any" min="0" value="${f.dose ?? 1}"></label>
+      <label data-only="supp" class="wide checkbox"><input type="checkbox" name="daily" ${f.daily ?? true ? "checked" : ""}> Nehme ich täglich – zum Abhaken im Tagebuch anzeigen</label>
+      <label data-only="supp" class="wide">Die Werte unten gelten für
+        <select name="per"><option value="unit">1 Einheit (z. B. 1 Kapsel)</option><option value="dose">die ganze Tagesdosis</option></select></label>
+
+      <div class="wide small muted" data-only="food">Nährwerte pro 100 g bzw. 100 ml – wie auf der Packung:</div>
+      <div class="wide small muted" data-only="supp">Inhalt laut Packung. Leer lassen, was nicht enthalten ist.</div>
+      <div class="wide form-grid" data-only="food">${BASIC.map(([k, l, u]) => field(k, l, u, round3(n[k]))).join("")}</div>
+      <div class="wide form-grid" data-only="supp">${field("kcal_s", "Energie", "kcal", supp ? round3(n.kcal) : "")}</div>
+
+      <details class="wide more" data-fatty ${supp || FATTY.some(([k]) => n[k] != null) ? "open" : ""}><summary>Omega-3-Fettsäuren</summary>
+        <div class="form-grid">${FATTY.map(([k, l, u]) => field(k, l, u, round3(n[k]))).join("")}</div>
+      </details>
+      <details class="wide more" ${hasMicro ? "open" : ""}><summary>Vitamine & Mineralstoffe</summary>
+        <div class="form-grid">${MICROS.map(microField).join("")}</div>
       </details>
       <button class="btn primary wide" type="submit">Speichern</button>
     </form>`);
   const form = $("#foodForm", d);
   const fill = (vals) => { for (const [k, v] of Object.entries(vals)) if (form.elements[k] && v != null) form.elements[k].value = Math.round(v * 1000) / 1000; };
-  if (n.salt == null && n.na != null) fill({ salt: (n.na * 2.5) / 1000 });
+  if (!supp && n.salt == null && n.na != null) fill({ salt: (n.na * 2.5) / 1000 });
+
+  let kind = supp ? "supp" : "food";
+  const setKind = (k) => {
+    kind = k;
+    d.querySelectorAll("[data-kind]").forEach((b) => b.classList.toggle("on", b.dataset.kind === k));
+    d.querySelectorAll("[data-only]").forEach((el) => {
+      el.hidden = el.dataset.only !== k;
+      el.querySelectorAll("input").forEach((i) => (i.disabled = el.hidden));
+    });
+    form.elements.name.placeholder = k === "supp" ? "z. B. Omega-3 Algenöl" : "";
+    if (k === "supp") d.querySelector("[data-fatty]").open = true;
+  };
+  d.querySelectorAll("[data-kind]").forEach((b) => (b.onclick = () => setKind(b.dataset.kind)));
+  setKind(kind);
 
   $("#offBtn", d).onclick = () => offSearch($("#offQuery", d).value.trim(), $("#offResult", d), (p) => {
     // Open Food Facts hat den Hauptnamen oft in einer anderen Sprache – deutschen Namen bevorzugen
@@ -109,7 +166,7 @@ export function openFoodEditor(existing, onSaved) {
     // Nullwerte bei Vitaminen/Mineralstoffen sind bei Open Food Facts meist Platzhalter, keine Messwerte
     for (const [k, [off, f2]] of Object.entries(OFF_MICRO)) if (nu[off + "_100g"] > 0) micro[k] = nu[off + "_100g"] * f2;
     fill(micro);
-    if (Object.keys(micro).length) form.querySelector("details").open = true;
+    if (Object.keys(micro).length) form.querySelectorAll("details")[1].open = true;
     if (p.serving_quantity) { form.elements.pGrams.value = p.serving_quantity; form.elements.pName.value = "Portion"; }
   });
   $("#offQuery", d).onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); $("#offBtn", d).click(); } };
@@ -118,18 +175,36 @@ export function openFoodEditor(existing, onSaved) {
     e.preventDefault();
     const fd = new FormData(form);
     const nn = {};
-    for (const [k] of [...BASIC, ...MICROS.map((m) => [m.key])]) {
+    const keys = [...BASIC.map(([k]) => k), "kcal_s", "folicAcid", ...FATTY.map(([k]) => k), ...MICROS.map((m) => m.key)];
+    for (const k of keys) {
       const v = fd.get(k);
       if (v !== "" && v != null) nn[k] = parseFloat(v);
     }
-    if (nn.salt != null) { nn.na = (nn.salt / 2.5) * 1000; delete nn.salt; }
-    nn.alcohol = 0;
-    const food = {
-      id: existing?.id || "c" + Date.now().toString(36), name: fd.get("name").trim(), cat: "Eigene",
-      aliases: fd.get("aliases").split(",").map((a) => a.trim()).filter(Boolean),
-      portions: [[fd.get("pName").trim() || "Portion", parseFloat(fd.get("pGrams")) || 100]],
-      n: nn, src: "eigene Angabe", liquid: fd.get("liquid") === "on",
+    const base = {
+      id: existing?.id || "c" + Date.now().toString(36), name: fd.get("name").trim(),
+      aliases: fd.get("aliases").split(",").map((a) => a.trim()).filter(Boolean), src: "eigene Angabe",
     };
+    let food;
+    if (kind === "supp") {
+      if (nn.kcal_s != null) nn.kcal = nn.kcal_s;
+      delete nn.kcal_s;
+      if (nn.folicAcid != null) nn.folate = nn.folicAcid * FOLIC_FACTOR;
+      delete nn.folicAcid;
+      if (nn.vitA != null) nn.retinol = nn.vitA; // Präparate enthalten meist Retinol – zählt für die Höchstmenge
+      const dose = parseFloat(fd.get("dose")) || 1;
+      const perUnit = fd.get("per") === "dose" ? 1 / dose : 1;
+      for (const k in nn) nn[k] *= 100 * perUnit;
+      nn.kcal ??= 0;
+      nn.alcohol = 0;
+      const unit = fd.get("unit").trim() || "Kapsel";
+      food = { ...base, cat: "Nahrungsergänzung", supplement: true, unit, dose, daily: fd.get("daily") === "on",
+        portions: [[unit, 1]], n: nn };
+    } else {
+      if (nn.salt != null) { nn.na = (nn.salt / 2.5) * 1000; delete nn.salt; }
+      nn.alcohol = 0;
+      food = { ...base, cat: "Eigene", n: nn, liquid: fd.get("liquid") === "on",
+        portions: [[fd.get("pName").trim() || "Portion", parseFloat(fd.get("pGrams")) || 100]] };
+    }
     saveCustomFood(food);
     d.close();
     toast(`„${esc(food.name)}“ gespeichert`);

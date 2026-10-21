@@ -299,3 +299,7 @@ details.more summary { cursor: pointer; color: var(--text-2); font-size: .9rem; 
 .toast button { background: none; border: 0; color: var(--accent); font-weight: 700; cursor: pointer; filter: brightness(1.4); }
 .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-2); }
 .empty-state .big-emoji { font-size: 2.4rem; }
+
+.kind-switch { display: flex; margin: 0 0 .8rem; }
+.kind-switch button { flex: 1; }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); }
