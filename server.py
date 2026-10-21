@@ -23,7 +23,7 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
             return super().do_GET()
         q = urllib.parse.parse_qs(url.query).get("q", [""])[0][:100]
         params = urllib.parse.urlencode({"q": q, "page_size": 10, "fields": OFF_FIELDS, "langs": "de"})
-        req = urllib.request.Request(f"{OFF_SEARCH}?{params}", headers={"User-Agent": "Naehrwerte/1.0 (privates Hobbyprojekt)"})
+        req = urllib.request.Request(f"{OFF_SEARCH}?{params}", headers={"User-Agent": "NutrAid/1.0 (https://github.com/CDApproach/nutraid)"})
         try:
             with urllib.request.urlopen(req, timeout=15) as r:
                 body = r.read()
@@ -43,5 +43,5 @@ if __name__ == "__main__":
     ap.add_argument("--port", type=int, default=8773)
     args = ap.parse_args()
     handler = functools.partial(NoCacheHandler, directory=str(Path(__file__).parent))
-    print(f"Nährwerte läuft auf http://{args.host}:{args.port}")
+    print(f"NutrAid läuft auf http://{args.host}:{args.port}")
     http.server.ThreadingHTTPServer((args.host, args.port), handler).serve_forever()

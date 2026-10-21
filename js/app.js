@@ -305,7 +305,7 @@ function bindProfile() {
     const blob = new Blob([exportData()], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `naehrwerte-${dayKey(new Date())}.json`;
+    a.download = `nutraid-${dayKey(new Date())}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
     state.lastBackup = Date.now();

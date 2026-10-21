@@ -13,7 +13,7 @@ export function initPwa() {
   });
   window.addEventListener("appinstalled", () => {
     installEvent = null;
-    toast("App installiert – du findest „Nährwerte“ jetzt bei deinen Apps");
+    toast("App installiert – du findest „NutrAid“ jetzt bei deinen Apps");
     requestPersistence().then(renderAppInfo);
   });
 }

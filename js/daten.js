@@ -1,7 +1,8 @@
 // Lebensmittel laden, Suche, Mengen-Parser, Lernen aus dem Verlauf und Speicherung.
 import { DEFAULT_PROFILE, PHYTO } from "./referenz.js";
 
-const STORE_KEY = "naehrwerte.v1";
+const STORE_KEY = "nutraid.v1";
+const OLD_STORE_KEY = "naehrwerte.v1"; // Name vor der Umbenennung in NutrAid
 const FLAV_CLASSES = ["flavan3ols", "anthocyanins", "flavonols", "flavanones", "flavones"];
 const PLANT_FREE = new Set(["Fleisch & Wurst", "Fisch", "Milchprodukte & Eier", "Käse", "Öle & Fette"]);
 
@@ -13,7 +14,7 @@ export const state = load();
 
 function load() {
   let s = null;
-  try { s = JSON.parse(localStorage.getItem(STORE_KEY)); } catch { /* leer */ }
+  try { s = JSON.parse(localStorage.getItem(STORE_KEY) ?? localStorage.getItem(OLD_STORE_KEY)); } catch { /* leer */ }
   s = s || {};
   return {
     profile: { ...DEFAULT_PROFILE, ...(s.profile || {}) },
@@ -28,11 +29,14 @@ function load() {
 }
 
 export function save() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { /* Speicher voll/gesperrt */ }
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    localStorage.removeItem(OLD_STORE_KEY);
+  } catch { /* Speicher voll/gesperrt */ }
 }
 
 export function exportData() {
-  return JSON.stringify({ app: "naehrwerte", version: 1, ...state }, null, 1);
+  return JSON.stringify({ app: "nutraid", version: 1, ...state }, null, 1);
 }
 
 export function importData(text) {

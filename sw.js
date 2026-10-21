@@ -1,8 +1,8 @@
 // Service Worker: macht die App offline nutzbar.
 // VERSION wird beim Deployment durch den Commit-Hash ersetzt; "dev" = lokale Entwicklung.
 const VERSION = "dev";
-const SHELL = `naehrwerte-shell-${VERSION}`;
-const DATA = `naehrwerte-data-${VERSION}`;
+const SHELL = `nutraid-shell-${VERSION}`;
+const DATA = `nutraid-data-${VERSION}`;
 
 const APP_FILES = [
   "./", "index.html", "manifest.webmanifest", "icon.svg", "css/style.css",

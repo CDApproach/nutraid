@@ -1,4 +1,4 @@
-# Nährwerte
+# NutrAid
 
 Ernährungstagebuch im Stil von Cronometer: Was du isst, wird gegen die D-A-CH-Referenzwerte (DGE) für
 alle Vitamine, Mineralstoffe, essentiellen Fett- und Aminosäuren gerechnet. Dazu kommen ausgewählte
@@ -13,10 +13,9 @@ Flavonoide, Glucosinolate, Lauch-Schwefelverbindungen).
 
 ## Als App aufs Handy (GitHub Pages)
 
-1. Neues GitHub-Repo anlegen und diesen Stand pushen.
-2. Im Repo unter *Settings → Pages → Build and deployment* als Quelle **GitHub Actions** wählen.
-   Der Workflow `.github/workflows/pages.yml` veröffentlicht danach jeden Push auf `main`.
-3. Die Pages-Adresse auf dem Handy in Vanadium (GrapheneOS) oder Chrome öffnen,
+1. Repo: https://github.com/CDApproach/nutraid – unter *Settings → Pages* ist **GitHub Actions** als Quelle
+   eingestellt. Der Workflow `.github/workflows/pages.yml` veröffentlicht jeden Push auf `main`.
+2. https://cdapproach.github.io/nutraid/ auf dem Handy in Vanadium (GrapheneOS) oder Chrome öffnen,
    im Menü (⋮) **„App installieren“** bzw. **„Zum Startbildschirm hinzufügen“** wählen.
 
 Die App läuft danach im eigenen Fenster und komplett offline. Neue Versionen lädt sie im Hintergrund
@@ -33,7 +32,7 @@ Barcode-Suche, nicht die Namenssuche.
 python3 server.py --port 8773
 ```
 
-Dann http://127.0.0.1:8773 öffnen. `server.py` schaltet den Browser-Cache ab und leitet die
+Dann http://127.0.0.1:8773 öffnen. Veröffentlicht unter https://cdapproach.github.io/nutraid/. `server.py` schaltet den Browser-Cache ab und leitet die
 Open-Food-Facts-Namenssuche weiter; als reine statische Seite funktioniert alles außer dieser Suche.
 
 ## Daten neu bauen

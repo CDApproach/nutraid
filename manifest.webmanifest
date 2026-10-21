@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Nährwerte",
-  "short_name": "Nährwerte",
+  "name": "NutrAid",
+  "short_name": "NutrAid",
   "description": "Ernährungstagebuch: Vitamine, Mineralstoffe und Pflanzenstoffe im Blick",
   "lang": "de",
   "start_url": "./",
