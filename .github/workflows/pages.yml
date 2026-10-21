@@ -1,0 +1,45 @@
+# Veröffentlicht die App bei jedem Push auf main als installierbare Web-App auf GitHub Pages.
+name: App veröffentlichen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # manuell über den "Run workflow"-Knopf
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Website zusammenstellen
+        run: |
+          mkdir -p _site
+          cp -r index.html sw.js manifest.webmanifest icon.svg icons css js data _site/
+          # Neue Cache-Version pro Commit, damit installierte Apps das Update bemerken
+          sed -i "s/const VERSION = \"dev\";/const VERSION = \"${GITHUB_SHA::12}\";/" _site/sw.js
+          grep -q "${GITHUB_SHA::12}" _site/sw.js
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -8,6 +8,7 @@ import { renderDashboard, bindDashboard, setAddHandler, openFood } from "./dashb
 import { renderVerlauf } from "./verlauf.js";
 import { renderCustomList, bindBrowse, openFoodEditor, openRecipeDialog } from "./eigene.js";
 import { $, $$, esc, num, toast, initTooltips, dayLabel } from "./ui.js";
+import { initPwa, renderAppInfo, requestPersistence, backupReminder } from "./pwa.js";
 
 let day = new Date();
 let range = 1;
@@ -103,6 +104,7 @@ function mealHour(m) {
 // ---------- Hinzufügen ----------
 function add(f, amount, m = meal) {
   const e = addEntry(today(), f, amount, m);
+  requestPersistence();
   toast(`${esc(f.name)} · ${esc(formatAmount(amount, f))} hinzugefügt`, "Rückgängig", () => {
     removeEntry(today(), e.id);
     renderAll();
@@ -272,6 +274,7 @@ function renderProfile() {
   form.elements.menstruating.checked = !!p.menstruating;
   form.elements.kcalOverride.value = p.kcalOverride || "";
   updateProfileCalc();
+  renderAppInfo();
 }
 
 function readProfile() {
@@ -305,6 +308,9 @@ function bindProfile() {
     a.download = `naehrwerte-${dayKey(new Date())}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
+    state.lastBackup = Date.now();
+    save();
+    renderAppInfo();
   };
   $("#importFile").onchange = async (e) => {
     const file = e.target.files[0];
@@ -375,6 +381,7 @@ function bindNav() {
 
 async function init() {
   initTooltips();
+  initPwa();
   await loadFoods();
   bindNav();
   bindInput();
@@ -386,7 +393,9 @@ async function init() {
     showTab("profil");
     toast("Willkommen! Trag kurz dein Profil ein, damit die Zielwerte passen.");
   } else {
-    showTab("heute");
+    showTab(location.hash === "#verlauf" ? "verlauf" : "heute");
+    backupReminder(() => showTab("profil"));
+    save();
   }
 }
 

@@ -22,6 +22,8 @@ function load() {
     stats: s.stats || {},
     pairs: s.pairs || {},
     setupDone: !!s.setupDone,
+    lastBackup: s.lastBackup || 0,
+    lastBackupAsk: s.lastBackupAsk || 0,
   };
 }
 

@@ -62,13 +62,13 @@ function position(e) {
 
 // ---------- Toast ----------
 let toastTimer;
-export function toast(text, action, onAction) {
+export function toast(text, action, onAction, sticky = false) {
   const el = document.getElementById("toast");
   el.innerHTML = `<span>${text}</span>` + (action ? `<button>${esc(action)}</button>` : "");
   el.hidden = false;
   if (action) el.querySelector("button").onclick = () => { el.hidden = true; onAction(); };
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (el.hidden = true), 5000);
+  if (!sticky) toastTimer = setTimeout(() => (el.hidden = true), 5000);
 }
 
 export function openSheet(id, html) {

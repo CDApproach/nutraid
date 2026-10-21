@@ -11,7 +11,23 @@ Flavonoide, Glucosinolate, Lauch-Schwefelverbindungen).
 - Eigene Lebensmittel (auch per Open-Food-Facts-Suche) und Rezepte
 - Alle Daten bleiben lokal im Browser (localStorage), Sicherung als JSON-Datei
 
-## Starten
+## Als App aufs Handy (GitHub Pages)
+
+1. Neues GitHub-Repo anlegen und diesen Stand pushen.
+2. Im Repo unter *Settings → Pages → Build and deployment* als Quelle **GitHub Actions** wählen.
+   Der Workflow `.github/workflows/pages.yml` veröffentlicht danach jeden Push auf `main`.
+3. Die Pages-Adresse auf dem Handy in Vanadium (GrapheneOS) oder Chrome öffnen,
+   im Menü (⋮) **„App installieren“** bzw. **„Zum Startbildschirm hinzufügen“** wählen.
+
+Die App läuft danach im eigenen Fenster und komplett offline. Neue Versionen lädt sie im Hintergrund
+und bietet „Neu laden“ an. Unter *Profil → App & Daten* siehst du, ob der Speicher dauerhaft
+geschützt ist, und wann die letzte Sicherung war. Die Einträge liegen nur auf dem Gerät – wer die
+Website-Daten von Vanadium löscht, löscht auch das Tagebuch.
+
+Auf GitHub Pages fehlt der lokale Proxy, daher funktioniert dort bei Open Food Facts nur die
+Barcode-Suche, nicht die Namenssuche.
+
+## Lokal starten
 
 ```bash
 python3 server.py --port 8773

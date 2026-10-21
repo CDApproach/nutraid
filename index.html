@@ -4,9 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nährwerte</title>
-  <meta name="theme-color" content="#2f7d4f">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a19" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -124,8 +126,9 @@
         </form>
       </div>
       <div class="card narrow">
-        <h2>Daten</h2>
-        <p class="muted small">Alles wird nur lokal in diesem Browser gespeichert. Mach ab und zu eine Sicherung.</p>
+        <h2>App & Daten</h2>
+        <p class="muted small">Alles wird nur lokal auf diesem Gerät gespeichert. Mach ab und zu eine Sicherung.</p>
+        <div id="appInfo"></div>
         <div class="row-btns">
           <button class="btn" id="exportBtn">Sicherung herunterladen</button>
           <label class="btn">Sicherung laden<input type="file" id="importFile" accept="application/json" hidden></label>
