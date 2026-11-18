@@ -1,6 +1,6 @@
 // Eigene Lebensmittel (mit Open-Food-Facts-Suche), Rezeptliste und Nachschlagen.
 import { NUTRIENTS } from "./referenz.js";
-import { state, foods, search, saveCustomFood, deleteCustomFood, loadUsda, recipeFromEntries, formatAmount, supplementDose } from "./daten.js";
+import { state, foods, search, saveCustomFood, deleteCustomFood, loadUsda, recipeFromEntries, formatAmount, supplementDose, recipeIngredients, recipeServings } from "./daten.js";
 import { openFood } from "./dashboard.js";
 import { esc, num, openSheet, toast, $ } from "./ui.js";
 
@@ -24,8 +24,8 @@ export function renderCustomList() {
   }
   el.innerHTML = list.map((c) => `<div class="custom-item">
       <span class="grow"><b>${esc(c.name)}</b> <span class="badge">${c.recipe ? "Rezept" : c.supplement ? "Ergänzung" : "eigenes"}</span>${c.daily ? '<span class="badge">täglich</span>' : ""}<br>
-      <span class="small muted">${c.supplement ? suppSummary(c) : `${num(c.n.kcal)} kcal / 100 g · ${c.portions.map((p) => `${esc(p[0])} = ${num(p[1])} g`).join(", ")}`}</span></span>
-      <button class="btn small" data-show="${c.id}">Nährwerte</button>
+      <span class="small muted">${c.supplement ? suppSummary(c) : c.recipe ? recipeSummary(c) : `${num(c.n.kcal)} kcal / 100 g · ${c.portions.map((p) => `${esc(p[0])} = ${num(p[1])} g`).join(", ")}`}</span></span>
+      <button class="btn small" data-show="${c.id}">${c.recipe ? "Zutaten & Nährwerte" : "Nährwerte"}</button>
       ${c.recipe ? "" : `<button class="btn small" data-edit="${c.id}">Bearbeiten</button>`}
       <button class="btn small ghost" data-del="${c.id}" aria-label="Löschen">🗑</button>
     </div>`).join("");
@@ -39,6 +39,15 @@ export function renderCustomList() {
       renderCustomList();
     }
   };
+}
+
+// "2 Portionen à 305 g · 523 kcal · Haferflocken, Milch, Banane"
+function recipeSummary(r) {
+  const servings = recipeServings(r);
+  const portion = r.portions[0][1];
+  const names = recipeIngredients(r).map((x) => x.food?.name || "?");
+  return `${servings} ${servings === 1 ? "Portion" : "Portionen"} à ${num(portion)} g · ${num((r.n.kcal || 0) * portion / 100)} kcal<br>` +
+    esc(names.join(", "));
 }
 
 // "2 Kapseln täglich · EPA 500 mg, DHA 250 mg, Vitamin D 20 µg"

@@ -403,9 +403,30 @@ export function recipeFromEntries(name, list, servings) {
   return {
     id: "r" + Date.now().toString(36), name, cat: "Rezepte", custom: true, recipe: true,
     aliases: [], portions: [["Portion", Math.round(total / servings)], ["Ganzes Rezept", Math.round(total)]],
-    n, items: list.map((e) => ({ food: e.food, grams: e.grams })),
+    n, servings, items: list.map((e) => ({ food: e.food, grams: e.grams, qty: e.qty, unit: e.unit })),
     src: "Rezept aus " + list.length + " Zutaten",
   };
+}
+
+// Zutaten eines Rezepts, umgerechnet auf die gewünschte Menge (Standard: ganzes Rezept)
+export function recipeIngredients(r, grams) {
+  const total = r.items.reduce((s, it) => s + it.grams, 0);
+  const factor = grams == null || !total ? 1 : grams / total;
+  return r.items.map((it) => {
+    const food = foods.get(it.food);
+    const g = it.grams * factor;
+    // Ältere Rezepte haben nur Gramm gespeichert
+    const amount = it.unit && it.qty != null
+      ? { qty: it.unit === "g" || it.unit === "ml" ? g : it.qty * factor, unit: it.unit, grams: g }
+      : { qty: g, unit: food && isLiquid(food) ? "ml" : "g", grams: g };
+    return { food, amount, kcal: food ? ((food.n.kcal || 0) * g) / 100 : 0 };
+  });
+}
+
+export function recipeServings(r) {
+  if (r.servings) return r.servings;
+  const total = r.items.reduce((s, it) => s + it.grams, 0);
+  return Math.max(1, Math.round(total / (r.portions?.[0]?.[1] || total)));
 }
 
 // ---------- Berechnung ----------

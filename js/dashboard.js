@@ -1,6 +1,6 @@
 // Auswertung: Energie-Ring, Makros, Nährstoffbalken, Lücken, Pflanzenstoffe und Detail-Dialoge.
 import { NUTRIENTS, GROUPS, PHYTO, NOT_TRACKED, PHYTO_EXCLUDED, targetsFor, energyTarget } from "./referenz.js";
-import { state, foods, totals, rangeTotals, entries, bestSources, defaultAmount, formatAmount, dayKey } from "./daten.js";
+import { state, foods, totals, rangeTotals, entries, bestSources, defaultAmount, formatAmount, dayKey, recipeIngredients, recipeServings } from "./daten.js";
 import { esc, fmt, num, pct, status, openSheet } from "./ui.js";
 
 const byKey = Object.fromEntries(NUTRIENTS.map((n) => [n.key, n]));
@@ -294,6 +294,7 @@ export function openFood(f, amount = defaultAmount(f)) {
     <div class="sheet-head"><h2>${esc(f.name)}</h2><button class="close" data-close aria-label="Schließen">×</button></div>
     <p class="small muted">${esc(formatAmount(amount, f))} · ${num((f.n.kcal || 0) * g / 100)} kcal · Quelle: ${esc(f.src || "")}${f.usda ? " (USDA, US-Produkt – ggf. angereichert)" : ""}</p>
     <p><button class="btn primary small" data-add="${f.id}">+ Zur aktuellen Mahlzeit</button></p>
+    ${f.recipe ? ingredientList(f, g) : ""}
     <h3>Anteil am Tagesbedarf (diese Portion)</h3>
     <div>${rows.map(({ n, v, r }) => {
       const st = status(n, r, false);
@@ -302,6 +303,19 @@ export function openFood(f, amount = defaultAmount(f)) {
     ${phyto ? `<h3 style="margin-top:.8rem">Pflanzenstoffe</h3><ul class="src-list">${phyto}</ul>` : ""}
   `);
   bindAdd(d);
+}
+
+function ingredientList(r, grams) {
+  const total = r.items.reduce((s, it) => s + it.grams, 0);
+  const servings = recipeServings(r);
+  const isWhole = Math.abs(grams - total) < 1;
+  const share = isWhole ? "ganzes Rezept" : `${num(grams)} g von ${num(total)} g`;
+  const whole = isWhole ? null : recipeIngredients(r);
+  return `<h3>Zutaten <span class="muted small">(${share}${servings > 1 ? ` · Rezept für ${servings} Portionen` : ""})</span></h3>
+    <ul class="src-list">${recipeIngredients(r, grams).map(({ food, amount, kcal }, i) =>
+      `<li><span>${food ? esc(food.name) : '<span class="muted">gelöschtes Lebensmittel</span>'}
+          ${whole && whole[i] ? `<span class="s-sub">ganzes Rezept: ${esc(formatAmount(whole[i].amount, food))}</span>` : ""}</span>
+        <span class="v">${esc(formatAmount(amount, food))} · ${num(kcal)} kcal</span></li>`).join("")}</ul>`;
 }
 
 export { energyTarget };
