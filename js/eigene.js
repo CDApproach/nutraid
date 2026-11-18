@@ -3,6 +3,9 @@ import { NUTRIENTS } from "./referenz.js";
 import { state, foods, search, saveCustomFood, deleteCustomFood, loadUsda, recipeFromEntries, formatAmount, supplementDose, recipeIngredients, recipeServings } from "./daten.js";
 import { openFood } from "./dashboard.js";
 import { esc, num, openSheet, toast, $ } from "./ui.js";
+import { scanBarcode, canScan } from "./scanner.js";
+
+export const SCAN_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M7 8v8M10 8v8M13 8v8M16.5 8v8"/></svg>`;
 
 const MICROS = NUTRIENTS.filter((n) => n.group === "vitamin" || n.group === "mineral");
 const BASIC = [["kcal", "Energie", "kcal"], ["fat", "Fett", "g"], ["satfat", "davon gesättigt", "g"], ["carbs", "Kohlenhydrate", "g"],
@@ -88,8 +91,9 @@ const SUPP_UNITS = ["Kapsel", "Tablette", "Tropfen", "Messlöffel", "Brausetable
 // Synthetische Folsäure wirkt stärker als Nahrungsfolat: 1 µg Folsäure = 1,7 µg Folat-Äquivalente
 const FOLIC_FACTOR = 1.7;
 
-export function openFoodEditor(existing, onSaved) {
+export function openFoodEditor(existing, onSaved, { barcode } = {}) {
   const f = existing || { n: {}, portions: [["Portion", 100]] };
+  let code = f.code || null;
   const supp = !!f.supplement;
   // Nahrungsergänzung wird pro Einheit eingegeben, intern aber wie "pro 100 g" bei 1 g je Einheit gespeichert
   const n = { ...f.n };
@@ -109,7 +113,8 @@ export function openFoodEditor(existing, onSaved) {
     </div>
     <div class="card" data-only="food" style="box-shadow:none;background:var(--surface-2)">
       <label class="small">Bei Open Food Facts suchen (Barcode oder Produktname)</label>
-      <div style="display:flex;gap:.4rem;margin-top:.3rem"><input id="offQuery" class="input" placeholder="z. B. 4008400401621 oder Skyr Natur">
+      <div style="display:flex;gap:.4rem;margin-top:.3rem"><input id="offQuery" class="input" inputmode="search" placeholder="z. B. 4008400401621 oder Skyr Natur">
+      ${canScan() ? `<button class="btn icon-only" id="offScan" type="button" aria-label="Barcode mit der Kamera scannen" title="Barcode scannen">${SCAN_ICON}</button>` : ""}
       <button class="btn" id="offBtn" type="button">Suchen</button></div>
       <div id="offResult" class="small"></div>
     </div>
@@ -161,6 +166,7 @@ export function openFoodEditor(existing, onSaved) {
   setKind(kind);
 
   $("#offBtn", d).onclick = () => offSearch($("#offQuery", d).value.trim(), $("#offResult", d), (p) => {
+    code = p.code || code;
     // Open Food Facts hat den Hauptnamen oft in einer anderen Sprache – deutschen Namen bevorzugen
     const brands = (p.brands || "").split(",").map((b) => b.trim()).filter(Boolean);
     const name = p.product_name_de || p.product_name || p.generic_name_de || p.generic_name || "";
@@ -179,6 +185,15 @@ export function openFoodEditor(existing, onSaved) {
     if (p.serving_quantity) { form.elements.pGrams.value = p.serving_quantity; form.elements.pName.value = "Portion"; }
   });
   $("#offQuery", d).onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); $("#offBtn", d).click(); } };
+  const offScan = $("#offScan", d);
+  if (offScan) offScan.onclick = async () => {
+    const c = await scanBarcode();
+    if (!c) return;
+    $("#offQuery", d).value = c;
+    code = c;
+    $("#offBtn", d).click();
+  };
+  if (barcode) { $("#offQuery", d).value = barcode; code = barcode; $("#offBtn", d).click(); }
 
   form.onsubmit = (e) => {
     e.preventDefault();
@@ -192,6 +207,7 @@ export function openFoodEditor(existing, onSaved) {
     const base = {
       id: existing?.id || "c" + Date.now().toString(36), name: fd.get("name").trim(),
       aliases: fd.get("aliases").split(",").map((a) => a.trim()).filter(Boolean), src: "eigene Angabe",
+      ...(code ? { code } : {}),
     };
     let food;
     if (kind === "supp") {
@@ -238,7 +254,18 @@ async function offSearch(q, out, onPick) {
       products = ((await r.json()).hits || []).map((p) => ({ ...p, brands: [].concat(p.brands || []).slice(0, 2).join(", ") }));
     }
     products = products.filter((p) => p.nutriments?.["energy-kcal_100g"] != null);
-    if (!products.length) { out.innerHTML = "Nichts gefunden."; return; }
+    if (!products.length) {
+      out.innerHTML = /^\d{8,14}$/.test(q)
+        ? "Dieses Produkt hat Open Food Facts noch nicht (oder ohne Nährwerte). Trag die Werte einfach von der Packung ab – der Barcode wird mitgespeichert, beim nächsten Scan findet die App es dann sofort."
+        : "Nichts gefunden.";
+      return;
+    }
+    if (/^\d{8,14}$/.test(q) && products.length === 1) {
+      onPick(products[0]);
+      const p = products[0];
+      out.innerHTML = `✓ <b>${esc(p.product_name_de || p.product_name || "Produkt")}</b> übernommen – bitte kurz prüfen und speichern.`;
+      return;
+    }
     out.innerHTML = `<ul class="src-list">${products.map((p, i) => `<li><span>${esc(p.product_name_de || p.product_name || p.generic_name_de || "?")} <span class="muted">${esc(p.brands || "")}</span></span>
       <span class="v">${num(p.nutriments["energy-kcal_100g"])} kcal<button type="button" class="add-btn" data-i="${i}">übernehmen</button></span></li>`).join("")}</ul>`;
     out.querySelectorAll("[data-i]").forEach((b) => (b.onclick = () => { onPick(products[+b.dataset.i]); out.innerHTML = "✓ Übernommen – bitte kurz prüfen."; }));

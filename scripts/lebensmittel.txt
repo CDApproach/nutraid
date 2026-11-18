@@ -1,5 +1,6 @@
 # Deutsche Lebensmittelliste -> USDA SR Legacy
 # Name | Kategorie | USDA-Beschreibung (exakt oder Anfang) | Portionen (Einheit=Gramm) | Suchbegriffe | Extras
+# WICHTIG: Neue Einträge immer am Ende anfügen – die IDs (de0, de1, …) ergeben sich aus der Reihenfolge und stehen im Tagebuch.
 # Extras: flav=<NDB>[:Faktor] = Flavonoide aus anderem Eintrag der Flavonoid-DB (0 = keine), fl = Getränk (ml), enr=<Mehl>:<Anteil> = B1/B2/Niacin/Eisen aus nicht angereichertem Mehl (w, rd, rm), kreuz/allium = Pflanzenstoff-Gruppe,
 #         bg=<g> Beta-Glucan pro 100 g, iod=<µg> Iod pro 100 g, set:<feld>=<wert> überschreibt Werte
 
@@ -78,7 +79,7 @@ Eisbergsalat | Gemüse | Lettuce, iceberg (includes crisphead types), raw | Port
 Römersalat | Gemüse | Lettuce, cos or romaine, raw | Portion=60 | Romana |
 Zucchini | Gemüse | Squash, summer, zucchini, includes skin, raw | Stück=200 | |
 Aubergine | Gemüse | Eggplant, raw | Stück=300 | |
-Kürbis | Gemüse | Pumpkin, raw | Portion=200 | |
+Kürbis | Gemüse | Pumpkin, raw | Portion=200 | Hokkaido |
 Butternut-Kürbis | Gemüse | Squash, winter, butternut, raw | Portion=200 | Hokkaido | flav=11422
 Zwiebel | Gemüse | Onions, raw | Stück=100 | Zwiebeln,rote Zwiebel | allium
 Frühlingszwiebel | Gemüse | Onions, spring or scallions (includes tops and bulb), raw | Stück=15 | Lauchzwiebel | allium
@@ -212,7 +213,7 @@ Speck | Fleisch & Wurst | Pork, cured, bacon, pre-sliced, cooked, pan-fried | Sc
 Bratwurst | Fleisch & Wurst | Bratwurst, pork, cooked | Stück=100 | Rostbratwurst | iod=8
 Wiener Würstchen | Fleisch & Wurst | Frankfurter, meat and poultry, cooked, boiled | Stück=50 | Wiener,Würstchen,Frankfurter | iod=8
 Leberwurst | Fleisch & Wurst | Braunschweiger (a liver sausage), pork | Scheibe=20,TL=8 | | iod=8
-Fleischwurst / Lyoner | Fleisch & Wurst | Bologna, beef and pork | Scheibe=15 | Lyoner,Leberkäse,Mortadella | iod=8
+Fleischwurst / Lyoner | Fleisch & Wurst | Bologna, beef and pork | Scheibe=15 | Lyoner,Leberkäse | iod=8
 
 ## Fisch & Meeresfrüchte
 Lachs | Fisch | Fish, salmon, Atlantic, farmed, cooked, dry heat | Filet=125 | Lachsfilet | iod=30
@@ -304,3 +305,205 @@ Pesto | Sonstiges | Sauce, pesto, ready-to-serve, refrigerated | EL=16 | Pesto G
 Tomatensauce | Sonstiges | Sauce, pasta, spaghetti/marinara, ready-to-serve | Portion=125 | Nudelsauce,Tomatensoße |
 Pizza Margherita | Gerichte | Pizza, cheese topping, regular crust, frozen, cooked | Stück=350,Stück(Achtel)=45 | Pizza | enr=w:0.35
 Hamburger | Gerichte | Fast foods, hamburger; single, regular patty; plain | Stück=90 | Burger | enr=w:0.25
+
+## Erweiterung 1 (2026-11)
+Stachelbeeren | Obst | Gooseberries, raw | Handvoll=70 | |
+Holunderbeeren | Obst | Elderberries, raw | Handvoll=60 | Holunder |
+Cranberries (frisch) | Obst | Cranberries, raw | Handvoll=50 | Preiselbeeren,Moosbeeren |
+Limette | Obst | Limes, raw | Stück=65 | Limone |
+Kaki | Obst | Persimmons, japanese, raw | Stück=170 | Sharonfrucht,Persimone | flav=97088
+Litschi | Obst | Litchis, raw | Stück=10 | Lychee |
+Maracuja | Obst | Passion-fruit, (granadilla), purple, raw | Stück=20 | Passionsfrucht |
+Quitte | Obst | Quinces, raw | Stück=200 | |
+Physalis | Obst | Groundcherries, (cape-gooseberries or poha), raw | Stück=5,Handvoll=50 | Kapstachelbeere |
+Netzmelone | Obst | Melons, cantaloupe, raw | Scheibe=170 | Cantaloupe,Charentais |
+Trockenpflaumen | Obst | Plums, dried (prunes), uncooked | Stück=10 | Backpflaumen,Dörrpflaumen |
+Bananenchips | Obst | Snacks, banana chips | Handvoll=30 | | flav=09040:2
+Kokosnuss (frisch) | Obst | Nuts, coconut meat, raw | Stück(Würfel)=20 | Kokos | flav=99622
+Traubensaft | Getränke | Grape juice, canned or bottled, unsweetened, without added ascorbic acid | Glas=200 | | fl
+Goji-Beeren | Obst | Goji berries, dried | EL=10 | Goji | flav=99618
+Acerola | Obst | Acerola, (west indian cherry), raw | Stück=5 | |
+Shiitake | Gemüse | Mushrooms, shiitake, raw | Stück=20,Portion=100 | Shiitakepilze | flav=11260
+Austernpilze | Gemüse | Mushrooms, oyster, raw | Portion=100 | Kräuterseitlinge,Seitlinge | flav=11260
+Pfifferlinge | Gemüse | Mushrooms, Chanterelle, raw | Portion=100 | Eierschwammerl | flav=11260
+Champignons (gebraten) | Gemüse | Mushrooms, white, stir-fried | Portion=100 | Pilze gebraten | flav=11260
+Schalotte | Gemüse | Shallots, raw | Stück=25 | Schalotten | allium flav=11282
+Zwiebel (gedünstet) | Gemüse | Onions, cooked, boiled, drained, without salt | Stück=90 | Zwiebeln gekocht | allium
+Artischocke (gekocht) | Gemüse | Artichokes, (globe or french), cooked, boiled, drained, without salt | Stück=120 | Artischockenherzen | flav=11007:0.8
+Okra | Gemüse | Okra, raw | Portion=100 | |
+Rettich | Gemüse | Radishes, oriental, raw | Stück=300,Portion=100 | Daikon | kreuz
+Meerrettich | Sonstiges | Horseradish, prepared | TL=5,EL=15 | Kren | kreuz flav=99079:0.6
+Topinambur | Gemüse | Jerusalem-artichokes, raw | Portion=150 | |
+Schwarzwurzel | Gemüse | Salsify, cooked, boiled, drained, without salt | Portion=150 | |
+Kartoffeln (roh) | Gemüse | Potatoes, flesh and skin, raw | Stück=100 | | flav=11352
+Ofenkartoffel | Gemüse | Potatoes, baked, flesh and skin, without salt | Stück=200 | Backkartoffel,Folienkartoffel | flav=11352
+Kartoffelsalat | Gerichte | Potato salad, home-prepared | Portion=200 | | flav=11352:0.6
+Süßkartoffel (roh) | Gemüse | Sweet potato, raw, unprepared | Stück=200 | Batate |
+Maiskolben (gekocht) | Gemüse | Corn, sweet, yellow, cooked, boiled, drained, without salt | Stück=150 | Mais | flav=11167
+Zuckerschoten | Gemüse | Peas, edible-podded, raw | Handvoll=50,Portion=100 | Zuckererbsen,Kaiserschoten |
+Erbsen (frisch) | Gemüse | Peas, green, raw | Portion=100 | |
+Sojasprossen | Gemüse | Mung beans, mature seeds, sprouted, raw | Handvoll=40 | Mungbohnensprossen,Sprossen |
+Linsensprossen | Gemüse | Lentils, sprouted, raw | Handvoll=30 | Keimlinge | flav=16069:0.3
+Spinat (TK, gekocht) | Gemüse | Spinach, frozen, chopped or leaf, cooked, boiled, drained, without salt | Portion=150 | Rahmspinat,Blattspinat | flav=11463:0.8
+Brokkoli (TK, gekocht) | Gemüse | Broccoli, frozen, chopped, cooked, boiled, drained, without salt | Portion=150 | | kreuz flav=11092:0.8
+Blumenkohl (TK, gekocht) | Gemüse | Cauliflower, frozen, cooked, boiled, drained, without salt | Portion=150 | | kreuz
+Grünkohl (TK, gekocht) | Gemüse | Kale, frozen, cooked, boiled, drained, without salt | Portion=150 | | kreuz flav=11233:0.7
+Gemüsemischung (TK, gekocht) | Gemüse | Vegetables, mixed, frozen, cooked, boiled, drained, without salt | Portion=150 | Mischgemüse,Buttergemüse,Leipziger Allerlei |
+Rote Bete (roh) | Gemüse | Beets, raw | Stück=100 | Rote Rübe |
+Chili | Gemüse | Peppers, hot chili, red, raw | Stück=15 | Peperoni,Chilischote | flav=11670
+Gewürzgurken | Gemüse | Pickles, cucumber, dill or kosher dill | Stück=35 | Essiggurken,Cornichons | flav=11205:0.5
+Grüne Oliven | Gemüse | Olives, pickled, canned or bottled, green | Stück=4 | |
+Rotkohl (gekocht) | Gemüse | Cabbage, red, cooked, boiled, drained, without salt | Portion=150 | Apfelrotkohl,Blaukraut gekocht | kreuz
+Zucchini (gekocht) | Gemüse | Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt | Portion=150 | |
+Aubergine (gekocht) | Gemüse | Eggplant, cooked, boiled, drained, without salt | Portion=150 | | flav=11209:0.8
+Paprika (gebraten) | Gemüse | Peppers, sweet, red, sauteed | Portion=100 | | flav=11821:0.8
+Tomate (gekocht) | Gemüse | Tomatoes, red, ripe, cooked | Portion=150 | geschmorte Tomaten |
+Endivie | Gemüse | Endive, raw | Portion=80 | Endiviensalat,Frisée |
+Chicorée | Gemüse | Chicory, witloof, raw | Stück=100 | |
+Radicchio | Gemüse | Radicchio, raw | Portion=80 | |
+Löwenzahn | Gemüse | Dandelion greens, raw | Handvoll=30 | |
+Brunnenkresse | Gemüse | Watercress, raw | Handvoll=20 | | kreuz
+Dill | Gemüse | Dill weed, fresh | EL=3 | |
+Koriander (frisch) | Gemüse | Coriander (cilantro) leaves, raw | EL=3,Handvoll=10 | Koriandergrün,Cilantro |
+Minze | Gemüse | Spearmint, fresh | EL=3 | Pfefferminze | flav=02064
+Rosmarin | Gemüse | Rosemary, fresh | TL=1,Zweig=2 | |
+Thymian | Gemüse | Thyme, fresh | TL=1,Zweig=1 | |
+Steckrübe | Gemüse | Rutabagas, raw | Portion=150 | Kohlrübe | kreuz
+Mairübchen | Gemüse | Turnips, raw | Stück=120 | Speiserübe,Teltower Rübchen | kreuz
+Spalterbsen (gekocht) | Hülsenfrüchte | Peas, split, mature seeds, cooked, boiled, without salt | Portion=150 | Erbsensuppe,gelbe Erbsen |
+Kichererbsen (trocken) | Hülsenfrüchte | Chickpeas (garbanzo beans, bengal gram), mature seeds, raw | Portion=60 | | flav=16056:1.1
+Kichererbsen (Dose) | Hülsenfrüchte | Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained, rinsed in tap water | Dose=240,EL=15 | | flav=16056:0.4
+Kidneybohnen (Dose) | Hülsenfrüchte | Beans, kidney, red, mature seeds, canned, drained solids, rinsed in tap water | Dose=250,Portion=150 | | flav=16029
+Mungbohnen (gekocht) | Hülsenfrüchte | Mung beans, mature seeds, cooked, boiled, without salt | Portion=150 | Mungbohnen,Mungobohnen |
+Lupinen (gekocht) | Hülsenfrüchte | Lupins, mature seeds, cooked, boiled, without salt | Portion=100 | Lupine |
+Sojabohnen (gekocht) | Hülsenfrüchte | Soybeans, mature seeds, cooked, boiled, with salt | Portion=150 | Soja | set:na=1 flav=99686:0.4
+Seidentofu | Hülsenfrüchte | Tofu, soft, prepared with calcium sulfate and magnesium chloride (nigari) | Portion=150 | Silken Tofu | flav=16126
+Falafel | Gerichte | Falafel, home-prepared | Stück=17 | |
+Baked Beans | Hülsenfrüchte | Beans, baked, canned, plain or vegetarian | Portion=200,Dose=400 | weiße Bohnen in Tomatensauce |
+Miso | Sonstiges | Miso | TL=6,EL=17 | Misopaste,Misosuppe |
+Sojajoghurt (natur) | Hülsenfrüchte | SILK Plain soy yogurt | Becher=150,Portion=150 | Soja-Joghurt,Alpro |
+Vollkornbrötchen | Getreide & Brot | Rolls, dinner, whole-wheat | Stück=60 | Dinkelbrötchen,Körnerbrötchen |
+Mehrkornbrot | Getreide & Brot | Bread, multi-grain (includes whole-grain) | Scheibe=45 | Körnerbrot,Dinkelbrot | enr=w:0.3
+Haferbrot | Getreide & Brot | Bread, oatmeal | Scheibe=45 | | enr=w:0.5 bg=0.8
+Wraps (Weizen) | Getreide & Brot | Tortillas, ready-to-bake or -fry, flour, refrigerated | Stück=60 | Tortilla,Wrap | enr=w:0.6
+Maistortilla | Getreide & Brot | Tortillas, ready-to-bake or -fry, corn, without added salt | Stück=25 | Tacos |
+Vollkornwraps | Getreide & Brot | Tortillas, ready-to-bake or -fry, whole wheat | Stück=60 | |
+Fladenbrot | Getreide & Brot | Bread, pita, white, unenriched | Stück=60,Viertel=100 | Pita,Pitabrot |
+Bagel | Getreide & Brot | Bagels, plain, unenriched, without calcium propionate(includes onion, poppy, sesame) | Stück=100 | |
+Toastbrötchen / English Muffin | Getreide & Brot | English muffins, plain, unenriched, with calcium propionate (includes sourdough) | Stück=57 | |
+Vollkorncracker | Getreide & Brot | Crackers, wheat, regular | Stück=4 | Cracker | enr=w:0.3
+Grieß | Getreide & Brot | Cereals, farina, unenriched, dry | EL=12,Portion=40 | Hartweizengrieß,Weichweizengrieß,Grießbrei |
+Polenta (trocken) | Getreide & Brot | Cornmeal, degermed, unenriched, yellow | Portion=60 | Maisgrieß |
+Hirse (roh) | Getreide & Brot | Millet, raw | Portion=60 | Hirseflocken |
+Buchweizen (roh) | Getreide & Brot | Buckwheat groats, roasted, dry | Portion=60 | Buchweizenflocken |
+Amaranth (gekocht) | Getreide & Brot | Amaranth grain, cooked | Portion=150 | Amarant |
+Amaranth (roh) | Getreide & Brot | Amaranth grain, uncooked | EL=10,Portion=50 | Amaranth gepufft |
+Parboiled Reis (gekocht) | Getreide & Brot | Rice, white, long-grain, parboiled, unenriched, cooked | Portion=180 | Langkornreis |
+Wildreis (gekocht) | Getreide & Brot | Wild rice, cooked | Portion=160 | |
+Reisnudeln (gekocht) | Getreide & Brot | Rice noodles, cooked | Portion=180 | |
+Glasnudeln (trocken) | Getreide & Brot | Noodles, chinese, cellophane or long rice (mung beans), dehydrated | Portion=50 | |
+Eiernudeln (gekocht) | Getreide & Brot | Noodles, egg, cooked, unenriched, with added salt | Portion=180 | Spätzle,Bandnudeln,Tagliatelle | set:na=5
+Porridge (mit Wasser) | Getreide & Brot | Cereals, oats, regular and quick, unenriched, cooked with water (includes boiling and microwaving), without salt | Portion=250 | Haferbrei | bg=0.9
+Weizenkleie | Getreide & Brot | Wheat bran, crude | EL=5 | Kleie |
+Weizenkeime | Getreide & Brot | Wheat germ, crude | EL=7 | |
+Pfannkuchen | Gerichte | Pancakes, plain, prepared from recipe | Stück=80 | Eierkuchen,Pancakes,Crêpes | enr=w:0.3
+Waffeln | Snacks & Süßes | Waffles, plain, prepared from recipe | Stück=75 | Waffel | enr=w:0.3
+Ziegenmilch | Milchprodukte & Eier | Milk, goat, fluid, with added vitamin D | Glas=200 | | fl set:vitD=0.1
+Kondensmilch | Milchprodukte & Eier | Milk, canned, evaporated, with added vitamin D and without added vitamin A | TL=5,Schuss=15 | Kaffeesahne,Bärenmarke | fl set:vitD=0.1
+Fruchtjoghurt | Milchprodukte & Eier | Yogurt, fruit, low fat, 10 grams protein per 8 ounce | Becher=150 | Joghurt mit Früchten |
+Vanillepudding | Milchprodukte & Eier | Puddings, vanilla, ready-to-eat | Becher=125 | Pudding |
+Milchreis | Milchprodukte & Eier | Puddings, rice, ready-to-eat | Becher=200 | |
+Kakao (mit Milch) | Getränke | Milk, chocolate beverage, hot cocoa, homemade | Tasse=250 | heiße Schokolade,Kakaogetränk,Trinkschokolade | fl set:vitD=0.1 flav=14194
+Wachteleier | Milchprodukte & Eier | Egg, quail, whole, fresh, raw | Stück=9 | Wachtelei |
+Eigelb | Milchprodukte & Eier | Egg, yolk, raw, fresh | Stück=17 | Eidotter |
+Pochiertes Ei | Milchprodukte & Eier | Egg, whole, cooked, poached | Stück=50 | verlorenes Ei |
+Bergkäse | Käse | Cheese, gruyere | Scheibe=25 | Gruyère,Greyerzer,Comté | iod=25
+Tilsiter | Käse | Cheese, tilsit | Scheibe=25 | Butterkäse | iod=25
+Blauschimmelkäse | Käse | Cheese, blue | Portion=30 | Gorgonzola,Roquefort,Bavaria Blu | iod=20
+Pecorino | Käse | Cheese, romano | EL=5,Portion=30 | Grana Padano | iod=20
+Provolone | Käse | Cheese, provolone | Scheibe=25 | | iod=20
+Hähnchenbrust (roh) | Fleisch & Wurst | Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw | Stück=180 | Hähnchenbrustfilet roh |
+Hähnchenkeule (mit Haut) | Fleisch & Wurst | Chicken, broilers or fryers, meat and skin, cooked, roasted | Stück=150 | Brathähnchen,Grillhähnchen,Hendl |
+Hähnchenflügel | Fleisch & Wurst | Chicken, broilers or fryers, wing, meat and skin, cooked, roasted | Stück=35 | Chicken Wings,Chickenwings |
+Hähnchenunterschenkel | Fleisch & Wurst | Chicken, broilers or fryers, dark meat, drumstick, meat only, cooked, roasted | Stück=75 | Drumstick |
+Putenhack | Fleisch & Wurst | Turkey, Ground, cooked | Portion=125 | Geflügelhack |
+Rindergulasch | Fleisch & Wurst | Beef, chuck, arm pot roast, separable lean only, trimmed to 0" fat, choice, cooked, braised | Portion=150 | Gulasch,Schmorbraten,Rinderbraten |
+Roastbeef | Fleisch & Wurst | Beef, round, eye of round, roast, separable lean only, trimmed to 1/8" fat, all grades, cooked, roasted | Scheibe=20,Portion=150 | |
+Rinderhack (roh) | Fleisch & Wurst | Beef, ground, 85% lean meat / 15% fat, raw | Portion=125 | Tatar,Mett |
+Schweinebauch | Fleisch & Wurst | Pork, fresh, belly, raw | Scheibe=60 | Bauchfleisch,Pork Belly |
+Schweinebraten | Fleisch & Wurst | Pork, fresh, shoulder, whole, separable lean and fat, cooked, roasted | Portion=150 | Schweinenacken,Pulled Pork,Schweineschulter |
+Kasseler | Fleisch & Wurst | Pork, cured, ham, whole, separable lean only, roasted | Scheibe=80 | Schinkenbraten | iod=8
+Hühnerleber | Fleisch & Wurst | Chicken, liver, all classes, cooked, simmered | Portion=100 | Geflügelleber |
+Ente | Fleisch & Wurst | Duck, domesticated, meat and skin, cooked, roasted | Portion=150 | Entenbrust,Gans |
+Kalbfleisch | Fleisch & Wurst | Veal, leg (top round), separable lean only, cooked, braised | Portion=150 | Kalb,Kalbsschnitzel |
+Hirsch / Reh | Fleisch & Wurst | Game meat, deer, cooked, roasted | Portion=150 | Wild,Wildfleisch,Reh,Hirsch |
+Kaninchen | Fleisch & Wurst | Game meat, rabbit, domesticated, composite of cuts, cooked, roasted | Portion=150 | Hase |
+Chorizo | Fleisch & Wurst | Sausage, pork, chorizo, link or ground, raw | Scheibe=8 | | iod=8
+Mortadella | Fleisch & Wurst | Mortadella, beef, pork | Scheibe=15 | | iod=8
+Putenaufschnitt | Fleisch & Wurst | Turkey breast, sliced, prepackaged | Scheibe=15 | Putenbrust Aufschnitt,Geflügelaufschnitt | iod=8
+Chicken Nuggets | Gerichte | Chicken tenders, breaded, frozen, prepared | Stück=18 | Nuggets,Chicken Strips | enr=w:0.15
+Thunfisch (frisch) | Fisch | Fish, tuna, fresh, yellowfin, raw | Steak=150 | Thunfischsteak | iod=20
+Thunfisch (Dose, in Öl) | Fisch | Fish, tuna, light, canned in oil, drained solids | Dose=140 | | iod=20
+Wildlachs | Fisch | Fish, salmon, sockeye, cooked, dry heat | Filet=125 | Rotlachs,Sockeye | iod=30
+Scholle | Fisch | Fish, flatfish (flounder and sole species), cooked, dry heat | Filet=150 | Seezunge,Flunder | iod=50
+Zander | Fisch | Fish, pike, walleye, cooked, dry heat | Filet=150 | Hecht,Barsch | iod=5
+Karpfen | Fisch | Fish, carp, cooked, dry heat | Portion=150 | | iod=2
+Tilapia | Fisch | Fish, tilapia, cooked, dry heat | Filet=120 | Pangasius,Buntbarsch | iod=5
+Dorade / Wolfsbarsch | Fisch | Fish, sea bass, mixed species, cooked, dry heat | Filet=150 | Dorade,Wolfsbarsch,Loup de Mer | iod=30
+Sardellen | Fisch | Fish, anchovy, european, canned in oil, drained solids | Stück=4 | Anchovis | iod=50
+Tintenfisch | Fisch | Mollusks, squid, mixed species, raw | Portion=120 | Calamari,Kalmar,Sepia | iod=20
+Austern | Fisch | Mollusks, oyster, eastern, wild, cooked, dry heat | Stück=15 | Auster | iod=60
+Jakobsmuscheln | Fisch | Mollusks, scallop, (bay and sea), cooked, steamed | Stück=20 | Kammmuscheln | iod=90
+Surimi | Fisch | Fish, surimi | Stück=17 | Krebsfleischimitat | iod=20
+Pinienkerne | Nüsse & Samen | Nuts, pine nuts, dried | EL=9 | | flav=12149
+Maronen | Nüsse & Samen | Nuts, chestnuts, european, roasted | Stück=8,Portion=100 | Esskastanien,Kastanien | flav=12098
+Cashewmus | Nüsse & Samen | Nuts, cashew butter, plain, without salt added | TL=8,EL=16 | | flav=12086
+Mohn | Nüsse & Samen | Spices, poppy seed | EL=9 | Mohnsamen |
+Kokosmilch | Nüsse & Samen | Nuts, coconut milk, canned (liquid expressed from grated meat and water) | EL=15,Dose=400 | Coconut Milk | fl flav=0
+Studentenfutter | Nüsse & Samen | Snacks, trail mix, regular, unsalted | Handvoll=30 | Nussmischung,Trail Mix |
+Gemischte Nüsse (geröstet) | Nüsse & Samen | Nuts, mixed nuts, dry roasted, with peanuts, without salt added | Handvoll=30 | Nüsse,Nussmix |
+Butterschmalz / Ghee | Öle & Fette | Butter oil, anhydrous | TL=5,EL=12 | Ghee,Butterschmalz |
+Schweineschmalz | Öle & Fette | Lard | TL=5,EL=12 | Schmalz |
+Sesamöl | Öle & Fette | Oil, sesame, salad or cooking | TL=5,EL=12 | |
+Avocadoöl | Öle & Fette | Oil, avocado | TL=5,EL=12 | |
+Erdnussöl | Öle & Fette | Oil, peanut, salad or cooking | TL=5,EL=12 | |
+Cola Zero / Light | Getränke | Beverages, carbonated, low calorie, cola or pepper-type, with aspartame, contains caffeine | Glas=250,Dose=330,Flasche=500 | Coke Zero,Pepsi Max | fl flav=0
+Limonade | Getränke | Beverages, carbonated, lemon-lime soda, no caffeine | Glas=250,Dose=330 | Sprite,Fanta,Brause | fl flav=0
+Energy Drink | Getränke | Beverages, Energy drink, RED BULL | Dose=250 | Red Bull,Monster | fl flav=0
+Tomatensaft | Getränke | Tomato juice, canned, without salt added | Glas=200 | Gemüsesaft | fl
+Karottensaft | Getränke | Carrot juice, canned | Glas=200 | Möhrensaft | fl flav=11124:0.8
+Spirituosen (40 %) | Getränke | Alcoholic beverage, distilled, all (gin, rum, vodka, whiskey) 80 proof | Schnapsglas=20,Glas=40 | Schnaps,Wodka,Vodka,Gin,Rum,Whisky,Korn | fl flav=0
+Alkoholfreies Bier | Getränke | Malt beverage, includes non-alcoholic beer | Flasche=500,Glas=330 | Malzbier | fl flav=14003
+Reisdrink | Getränke | Beverages, rice milk, unsweetened | Glas=200 | Reismilch | fl flav=0
+Kokoswasser | Getränke | Nuts, coconut water (liquid from coconuts) | Glas=250 | | fl
+Apfelkuchen | Snacks & Süßes | Pie, apple, commercially prepared, unenriched flour | Stück=120 | Apfelstrudel,Obstkuchen |
+Schokokekse | Snacks & Süßes | Cookies, chocolate chip, commercially prepared, regular, higher fat, enriched | Stück=10 | Cookies | enr=w:0.45
+Donut | Snacks & Süßes | Doughnuts, cake-type, plain, sugared or glazed | Stück=60 | Berliner,Krapfen | enr=w:0.45
+Muffin | Snacks & Süßes | Muffins, blueberry, commercially prepared | Stück=110 | Muffins | enr=w:0.4
+Brownie | Snacks & Süßes | Cookies, brownies, commercially prepared | Stück=55 | | enr=w:0.3
+Weiße Schokolade | Snacks & Süßes | Candies, white chocolate | Riegel=10,Tafel=100 | |
+Schokoladeneis | Snacks & Süßes | Ice creams, chocolate | Kugel=60 | Schokoeis |
+Sorbet | Snacks & Süßes | Sherbet, orange | Kugel=60 | Fruchteis,Wassereis |
+Salzstangen | Snacks & Süßes | Snacks, pretzels, hard, plain, salted | Handvoll=30 | Salzbrezeln | enr=w:0.8
+Tortillachips | Snacks & Süßes | Snacks, tortilla chips, plain, white corn, salted | Handvoll=30 | Nachos |
+Brauner Zucker | Snacks & Süßes | Sugars, brown | TL=4,EL=12 | Rohrzucker | flav=0
+Agavendicksaft | Snacks & Süßes | Sweetener, syrup, agave | TL=7,EL=21 | Agavensirup | flav=0
+Gemüsebrühe | Sonstiges | Soup, vegetable broth, ready to serve | Tasse=250 | Brühe,Bouillon | fl iod=50 flav=0
+Hefe | Sonstiges | Leavening agents, yeast, baker's, active dry | Päckchen=7 | Trockenhefe | flav=0
+Hefeextrakt | Sonstiges | Yeast extract spread | TL=5 | Marmite,Vegemite,Vitam-R | flav=0
+Apfelessig | Sonstiges | Vinegar, cider | EL=15 | Essig | fl flav=0
+Barbecuesauce | Sonstiges | Sauce, barbecue | EL=17 | BBQ-Sauce,Grillsauce |
+Salatdressing (Italian) | Sonstiges | Salad dressing, italian dressing, commercial, regular | EL=15 | Dressing,Vinaigrette |
+Currypulver | Sonstiges | Spices, curry powder | TL=2 | Curry |
+Kreuzkümmel | Sonstiges | Spices, cumin seed | TL=2 | Cumin |
+Muskatnuss | Sonstiges | Spices, nutmeg, ground | Prise=0.3 | Muskat |
+Knoblauchpulver | Sonstiges | Spices, garlic powder | TL=3 | Knoblauchgranulat | flav=11215:3
+Chilipulver | Sonstiges | Spices, pepper, red or cayenne | TL=2,Prise=0.3 | Cayennepfeffer,Chiliflocken |
+Lasagne | Gerichte | Restaurant, Italian, lasagna with meat | Portion=350 | | enr=w:0.15
+Spaghetti Bolognese | Gerichte | Spaghetti with meat sauce, frozen entree | Portion=350 | Nudeln mit Hackfleischsauce | enr=w:0.15
+Hühnersuppe | Gerichte | Soup, chicken noodle, canned, prepared with equal volume water | Teller=300 | Hühnernudelsuppe | fl
+Minestrone | Gerichte | Soup, minestrone, canned, prepared with equal volume water | Teller=300 | Gemüsesuppe | fl
+Tomatensuppe | Gerichte | Soup, tomato, canned, prepared with equal volume water, commercial | Teller=300 | | fl
+Linseneintopf | Gerichte | Soup, lentil with ham, canned, ready-to-serve | Teller=350 | Linsensuppe |
+Cheeseburger | Gerichte | Fast foods, cheeseburger; single, regular patty; plain | Stück=115 | | enr=w:0.25
+Pizza Salami | Gerichte | Pizza, pepperoni topping, regular crust, frozen, cooked | Stück=350,Stück(Achtel)=45 | Pizza Peperoni | enr=w:0.35

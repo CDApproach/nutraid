@@ -6,7 +6,7 @@ const DATA = `nutraid-data-${VERSION}`;
 
 const APP_FILES = [
   "./", "index.html", "manifest.webmanifest", "icon.svg", "css/style.css",
-  "js/app.js", "js/daten.js", "js/pwa.js", "js/dashboard.js", "js/eigene.js", "js/referenz.js", "js/ui.js", "js/verlauf.js",
+  "js/app.js", "js/daten.js", "js/pwa.js", "js/scanner.js", "js/dashboard.js", "js/eigene.js", "js/referenz.js", "js/ui.js", "js/verlauf.js", "js/vendor/zxing.min.js",
   "data/lebensmittel.json", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-192.png", "icons/maskable-512.png",
 ];
 // Die große USDA-Liste (5,5 MB) wird erst bei Bedarf geladen und dann zwischengespeichert

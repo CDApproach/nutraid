@@ -8,7 +8,9 @@ Flavonoide, Glucosinolate, Lauch-Schwefelverbindungen).
 - Eingabe als Freitext: „2 Eier“, „150 g Haferflocken“, „Brokkoli 1 Portion“, „1 Glas Milch“
 - Lernt, was du wann isst, merkt sich Mengen und schlägt Kombinationen vor („Dazu isst du oft …“)
 - Tag / 7 Tage / 30 Tage Ø, Lückenanalyse mit Vorschlägen, Verlauf als Balken und Heatmap
-- Eigene Lebensmittel (auch per Open-Food-Facts-Suche) und Rezepte
+- Rund 480 deutsche Lebensmittel, dazu die komplette USDA-Liste (~7 800 Einträge) in der Suche
+- Barcode-Scanner über die Kamera: bekannte Produkte landen direkt im Tagebuch, neue werden bei Open Food Facts nachgeschlagen
+- Eigene Lebensmittel, Nahrungsergänzungsmittel und Rezepte
 - Alle Daten bleiben lokal im Browser (localStorage), Sicherung als JSON-Datei
 
 ## Als App aufs Handy (GitHub Pages)
@@ -49,4 +51,8 @@ cd .. && python3 scripts/export_flav.py && python3 scripts/build_db.py
 ```
 
 Die deutsche Lebensmittelliste mit Portionen, Synonymen und Korrekturen steht in
-`scripts/lebensmittel.txt`.
+`scripts/lebensmittel.txt`. Neue Einträge immer ans Ende anhängen – die IDs ergeben sich aus der
+Reihenfolge, und das Tagebuch verweist darauf.
+
+Der Barcode-Scanner nutzt den eingebauten `BarcodeDetector` des Browsers, falls vorhanden, sonst
+[ZXing](https://github.com/zxing-js/library) 0.21.3 (MIT, `js/vendor/`).

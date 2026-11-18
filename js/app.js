@@ -6,7 +6,8 @@ import {
 } from "./daten.js";
 import { renderDashboard, bindDashboard, setAddHandler, openFood } from "./dashboard.js";
 import { renderVerlauf } from "./verlauf.js";
-import { renderCustomList, bindBrowse, openFoodEditor, openRecipeDialog } from "./eigene.js";
+import { renderCustomList, bindBrowse, openFoodEditor, openRecipeDialog, SCAN_ICON } from "./eigene.js";
+import { scanBarcode, canScan } from "./scanner.js";
 import { $, $$, esc, num, toast, initTooltips, dayLabel } from "./ui.js";
 import { initPwa, renderAppInfo, requestPersistence, backupReminder } from "./pwa.js";
 
@@ -196,7 +197,23 @@ function newFoodFromInput() {
   });
 }
 
+// Barcode scannen: bekanntes Produkt direkt eintragen, sonst bei Open Food Facts nachschlagen und anlegen
+async function scanToDiary() {
+  closeSuggest();
+  const code = await scanBarcode();
+  if (!code) return;
+  const known = [...foods.values()].find((f) => f.code === code);
+  if (known) return add(known, amountFor(known, { qty: null, unit: null }));
+  openFoodEditor(null, (f) => add(f, amountFor(f, { qty: null, unit: null })), { barcode: code });
+}
+
 function bindInput() {
+  if (canScan()) {
+    const b = $("#scanBtn");
+    b.innerHTML = SCAN_ICON;
+    b.hidden = false;
+    b.onclick = scanToDiary;
+  }
   input().addEventListener("input", updateSuggest);
   input().addEventListener("keydown", (e) => {
     if (list().hidden) {

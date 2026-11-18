@@ -45,6 +45,7 @@
               <input id="foodInput" type="text" autocomplete="off" spellcheck="false"
                      placeholder="Was hast du gegessen? z. B. „2 Eier“ oder „150 g Haferflocken“"
                      aria-label="Lebensmittel eingeben" role="combobox" aria-expanded="false" aria-controls="suggestList">
+              <button class="icon-btn scan-btn" id="scanBtn" type="button" aria-label="Barcode scannen" title="Barcode scannen" hidden></button>
               <ul id="suggestList" class="suggest" role="listbox" hidden></ul>
             </div>
             <div class="quick" id="suppToggles"></div>
@@ -147,6 +148,7 @@
   <!-- Dialoge -->
   <dialog id="detailDialog" class="sheet"></dialog>
   <dialog id="foodDialog" class="sheet"></dialog>
+  <dialog id="scanDialog" class="sheet"></dialog>
   <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
   <div id="toast" class="toast" role="status" hidden></div>
 
